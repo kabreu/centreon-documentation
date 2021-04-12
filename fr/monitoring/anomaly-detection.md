@@ -80,19 +80,6 @@ Saisissez votre jeton et cliquez sur **Save** :
 > Si votre serveur Centreon Central a besoin d'une configuration proxy pour
 > accéder à Internet, cochez la case **Use proxy**.
 
-Rendez-vous dans le menu `Configuration > Collecteurs` et éditez le
-serveur **Centreon central** :
-
-![imaage](../assets/monitoring/anomaly/install_05.png)
-
-Modifiez la commande de rechargement de Centreon Broker pour :
-
-``` Shel
-service cbd restart
-```
-
-Cliquez sur **Save**.
-
 Votre plateforme Centreon est maintenant prête à utiliser la détection
 d'anomalies Centreon.
 
@@ -308,7 +295,7 @@ de notification.
 
 #### Quand la fonctionnalité sera-t-elle disponible? Et pour quelle édition Centreon ?
 
-La fonctionnalité de détection des anomalies sera disponible pour Centreon Business Edition dans la version 20.10.
+La fonctionnalité de détection des anomalies sera disponible pour Centreon Business Edition dans la version 21.10.
 
 ### Combien de temps les données sont-elles hébergées ?
 

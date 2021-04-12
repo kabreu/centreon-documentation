@@ -3,10 +3,6 @@ id: cloud-cloudfoundry-api
 title: Cloud Foundry
 ---
 
-| Current version | Status | Date |
-| :-: | :-: | :-: |
-| 3.0.1 | `STABLE` | Nov  9 2018 |
-
 ## Prerequisites
 
 ### Centreon Plugin
@@ -14,7 +10,7 @@ title: Cloud Foundry
 Install this plugin on each needed poller:
 
 ``` shell
-yum install centreon-plugin-Cloud-Cloudfoundry-Api
+yum install centreon-plugin-Cloud-Cloudfoundry-Restapi
 ```
 
 ## Centreon Configuration
@@ -48,4 +44,3 @@ The following macros must be configured on host:
 | CLOUDFOUNDRYAPIPASSWORD | API password                      |               |
 
 Click on the *Save* button.
-

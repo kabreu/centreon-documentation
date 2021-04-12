@@ -147,7 +147,7 @@ Centreon propose le paquet `centreon-ha`, qui fournit tous les scripts et les d�
 
 ```bash
 yum install epel-release
-yum install centreon-ha
+yum install centreon-ha pcs pacemaker corosync corosync-qdevice 
 ```
 
 ### Échanges de clefs SSH
@@ -546,8 +546,9 @@ chmod 775 /var/log/centreon-engine/
 mkdir /var/log/centreon-engine/archives
 chown centreon-engine: /var/log/centreon-engine/archives
 chmod 775 /var/log/centreon-engine/archives/
-chmod 664 /var/log/centreon-engine/*
-chmod 664 /var/log/centreon-engine/archives/*
+find /var/log/centreon-engine/ -type f -exec chmod 664 {} \;
+find /usr/share/centreon/www/img/media -type d -exec chmod 775 {} \;
+find /usr/share/centreon/www/img/media -type f \( ! -iname ".keep" ! -iname ".htaccess" \) -exec chmod 664 {} \;
 ```
 
 - Découverte des services 
@@ -662,6 +663,12 @@ pcs quorum device add model net \
 
 Cette commande ne doit être lancée que sur un des deux nœuds centraux :
 
+> **ATTENTION :** la commande suivante varie suivant la distribution Linux utilisée.
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS7-->
+
 ```bash
 pcs resource create "ms_mysql" \
     ocf:heartbeat:mysql-centreon \
@@ -679,6 +686,27 @@ pcs resource create "ms_mysql" \
     test_table='centreon.host' \
     master
 ```
+
+<!--RHEL-->
+
+```bash
+pcs resource create "ms_mysql" \
+    ocf:heartbeat:mysql-centreon \
+    config="/etc/my.cnf.d/server.cnf" \
+    pid="/var/lib/mysql/mysql.pid" \
+    datadir="/var/lib/mysql" \
+    socket="/var/lib/mysql/mysql.sock" \
+    replication_user="@MARIADB_REPL_USER@" \
+    replication_passwd='@MARIADB_REPL_PASSWD@' \
+    max_slave_lag="15" \
+    evict_outdated_slaves="false" \
+    binary="/usr/bin/mysqld_safe" \
+    test_user="@MARIADB_REPL_USER@" \
+    test_passwd="@MARIADB_REPL_PASSWD@" \
+    test_table='centreon.host' \
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 > **ATTENTION :** la commande suivante varie suivant la distribution Linux utilisée.
 
@@ -926,4 +954,10 @@ Colocation Constraints:
   ms_mysql-master with centreon (score:INFINITY) (rsc-role:Master) (with-rsc-role:Started)
 Ticket Constraints:
 ```
+
+
+
+## Intégrer des collecteurs
+
+Il ne reste maintenant plus qu'à [intégrer des collecteurs](integrating-pollers.html) et commencer à superviser !
 

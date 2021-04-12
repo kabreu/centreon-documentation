@@ -79,19 +79,6 @@ Enter your token and click on **Save**:
 > If your Centreon Central server needs a proxy configuration to access the
 > Internet, check the **Use proxy** box.
 
-Go to the `Configuration > Pollers` menu and edit the **Centreon central**
-server:
-
-![imaage](assets/monitoring/anomaly/install_05.png)
-
-Change the reload command of Centreon Broker to:
-
-``` Shel
-service cbd restart
-```
-
-Click on **Save**.
-
 Your Centreon platform is now ready to use Centreon Anomaly Detection.
 
 ## Configuration
@@ -300,7 +287,7 @@ the models, as well as the generation of alerts in the event console and the tri
 
 #### When will the feature be available? And for what Centreon Edition?
 
-The Anomaly Detection functionality will be available for Centreon Business Edition in the 20.10 version.
+The Anomaly Detection functionality will be available for Centreon Business Edition in the 21.10 version.
 
 ### How long is the data stored?
 

@@ -43,7 +43,6 @@ Ce modèle ne collecte pas de métrique, mais donne l'état général du cluster
   * `centreontrapd`
   * `snmptrapd`
 
-
 <!--proc-corosync-->
 
 | Metric name | Description                                                    | Unit  |
@@ -109,6 +108,14 @@ Une fois cette étape effectuée sur chaque nœud central, il ne reste plus qu'�
 
 ```bash
 ssh <cluster-node-ip-address>
+```
+
+L'utilisateur `centreon-engine` du poller est alors capable d'ouvrir une session SSH sur les deux nœuds centraux. 
+
+Il ne reste plus qu'à l'intégrer au groupe `haclient` pour lui permettre d'exécuter les commandes nécessaires à la surveillance du cluster :
+
+```bash
+usermod -a -G haclient centreon-engine
 ```
 
 ## Installation
@@ -232,7 +239,6 @@ ECDSA key fingerprint is MD5:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
 Are you sure you want to continue connecting (yes/no)?
 ```
 
-
 #### UNKNOWN: Command error: Permission denied, please try again
 
 Le message complet ressemble à ce qui suit :
@@ -266,6 +272,3 @@ Dans le cas contraire, lancer ces commandes :
 chmod 700 /var/lib/centreon-engine/.ssh
 chmod 600 /var/lib/centreon-engine/.ssh/authorized_keys
 ```
-
-
-

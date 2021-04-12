@@ -42,7 +42,7 @@ pour Windows. Les deux méthodes de connexion à l'agent, NRPE & RestAPI, sont s
 ## Prérequis 
 
 Le Plugin Centreon pour Microsoft SCCM est inclus dans l'agent *centreon-nsclient* et est exécuté localement par ce dernier.
-Pour ce faire, l'agent *centreon-nsclient* doit être installé et configuré sur les serveurs cible de l'infrastructure SCCM.
+Pour ce faire, l'agent *centreon-nsclient* doit être installé et configuré sur les serveurs cible de l'infrastructure SCCM (ceux où la console SCCM Admin est installée).
 Vous pouvez utiliser au choix les méthodes de connexion NRPE & RestAPI depuis le Collecteur Centreon pour interroger l'agent.
 Rendez-vous sur la documentation associée pour plus d'informations sur l'agent et ses différentes méthodes de connexion:
 
@@ -200,7 +200,6 @@ Dans cet exemple, la commande vise à interroger un agent *centreon-nsclient* en
 du Plugin *SCCM* integré dans *centreon-nsclient* (```--command=check_centreon_plugins --arg='apps::sccm::local::plugin' --arg='site-status'```).
 
 Une alarme de type CRITICAL sera déclenchée si le status *site SCCM* est reporté en état *FAILED* (```--arg='--critical-status="%{status} eq FAILED"'```).
-
 
 Pour chaque mode, la liste de toutes les métriques, seuils associés et options complémentaires peut être affichée 
 en ajoutant le paramètre ```--help``` à la commande:

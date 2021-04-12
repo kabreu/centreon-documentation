@@ -42,7 +42,7 @@ NRPE and RestAPI are supported.
 ## Prerequisites 
 
 The Windows SCCM Plugin is hosted by the *centreon-nsclient* agent which must be installed, configured and running on the Windows server 
-hosting the SCCM feature.
+hosting the SCCM feature. (Server running the SCCM Admin console)
 The Centreon Poller can connect to the agent using either the NRPE method or the RestAPI method.
 More information on how to achieve the installation and the configuration of the agent can be found in the associated procedure:
 
@@ -196,7 +196,6 @@ along with the related connections settings defined in the Host Macros (```--por
 The *centreon-nsclient* agent is requested to locally execute the *site-status* mode of the *SCCM* Plugin
 (```--command=check_centreon_plugins --arg='apps::sccm::local::plugin' --arg='site-status'```).
 This command would trigger a CRITICAL alarm if the reported status of the *SCCM site* is *FAILED* (```--arg='--critical-status="%{status} eq FAILED"'```).
-
 
 All the available thresholds and options of the mode can be displayed by adding the  ```--help``` 
 parameter to the command:

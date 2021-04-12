@@ -145,7 +145,7 @@ Centreon offers a package named `centreon-ha`, which provides all the needed fil
 
 ```bash
 yum install epel-release
-yum install centreon-ha
+yum install centreon-ha pcs pacemaker corosync corosync-qdevice
 ```
 
 ### SSH keys exchange
@@ -545,8 +545,9 @@ chmod 775 /var/log/centreon-engine/
 mkdir /var/log/centreon-engine/archives
 chown centreon-engine: /var/log/centreon-engine/archives
 chmod 775 /var/log/centreon-engine/archives/
-chmod 664 /var/log/centreon-engine/*
-chmod 664 /var/log/centreon-engine/archives/*
+find /var/log/centreon-engine/ -type f -exec chmod 664 {} \;
+find /usr/share/centreon/www/img/media -type d -exec chmod 775 {} \;
+find /usr/share/centreon/www/img/media -type f \( ! -iname ".keep" ! -iname ".htaccess" \) -exec chmod 664 {} \;
 ```
 
 - Services discovery
@@ -664,6 +665,10 @@ pcs quorum device add model net \
 
 To be run **only on one central node**:
 
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS7-->
+
 ```bash
 pcs resource create "ms_mysql" \
     ocf:heartbeat:mysql-centreon \
@@ -681,6 +686,25 @@ pcs resource create "ms_mysql" \
     test_table='centreon.host' \
     master
 ```
+<!--RHEL-->
+
+```bash
+pcs resource create "ms_mysql" \
+    ocf:heartbeat:mysql-centreon \
+    config="/etc/my.cnf.d/server.cnf" \
+    pid="/var/lib/mysql/mysql.pid" \
+    datadir="/var/lib/mysql" \
+    socket="/var/lib/mysql/mysql.sock" \
+    replication_user="@MARIADB_REPL_USER@" \
+    replication_passwd='@MARIADB_REPL_PASSWD@' \
+    max_slave_lag="15" \
+    evict_outdated_slaves="false" \
+    binary="/usr/bin/mysqld_safe" \
+    test_user="@MARIADB_REPL_USER@" \
+    test_passwd="@MARIADB_REPL_PASSWD@" \
+    test_table='centreon.host'
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 > **WARNING:** the syntax of the following command depends on the Linux Distribution you are using.
 
@@ -928,4 +952,8 @@ Colocation Constraints:
   ms_mysql-master with centreon (score:INFINITY) (rsc-role:Master) (with-rsc-role:Started)
 Ticket Constraints:
 ```
+
+## Integrating pollers
+
+You can now [add your pollers](integrating-pollers.html) and start monitoring!
 

@@ -3,10 +3,6 @@ id: operatingsystems-windows-nsclient-05-restapi
 title: Windows NSClient API
 ---
 
-| Current version | Status | Date |
-| :-: | :-: | :-: |
-| 3.1.13 | `STABLE` | Jan  18 2019 |
-
 ## Overview
 
 NSClient++ provides is own REST API using the webserver module.
@@ -113,7 +109,7 @@ To connect to the REST API of NSClient++, you need to enable the web service of 
 * Configure a new password for a better authentification:
 
 ```bash
-nscp web password -- -set centreon
+nscp web password --set centreon
 Password updated successfully, please restart nsclient++ for changes to affect.
 ```
 

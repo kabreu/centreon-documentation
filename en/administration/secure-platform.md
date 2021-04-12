@@ -58,9 +58,16 @@ Once you have your certificate, perform the following procedure to activate HTTP
 
 1. Install SSL module for Apache:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+```shell
+dnf install mod_ssl mod_security openssl
+```
+<!--CentOS 7-->
 ```shell
 yum install httpd24-mod_ssl httpd24-mod_security openssl
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 2. Install your certificates:
 
@@ -71,13 +78,28 @@ Copy your certificate and key on the server according your configuration; by def
 
 3. Backup previous Apache configuration for Centreon:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+```shell
+cp /etc/httpd/conf.d/10-centreon.conf{,.origin}
+```
+<!--CentOS 7-->
 ```shell
 cp /opt/rh/httpd24/root/etc/httpd/conf.d/10-centreon.conf{,.origin}
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 4. Edit Centreon Apache configuration
 
+> Centreon offers an example configuration file to enable HTTPS available in the following directory:
+> **/usr/share/centreon/examples/centreon.apache.https.conf**
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+Edit the **/etc/httpd/conf.d/10-centreon.conf** as following:
+<!--CentOS 7-->
 Edit the **/opt/rh/httpd24/root/etc/httpd/conf.d/10-centreon.conf** as following:
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 ```apacheconf
 Alias /centreon/api /usr/share/centreon
@@ -103,9 +125,11 @@ ProxyTimeout 300
 #####################
 # SSL configuration #
 #####################
-    SSLEngine on
-    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
-    SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+    SSLEngine On
+    SSLProtocol All -SSLv3 -SSLv2 -TLSv1 -TLSv1.1
+    SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-DSS-AES256-GCM-SHA384:DHE-DSS-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-GCM-SHA256:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!DSS:!RC4:!SEED:!ADH:!IDEA
+    SSLHonorCipherOrder On
+    SSLCompression Off
     SSLCertificateFile /etc/pki/tls/certs/ca.crt
     SSLCertificateKeyFile /etc/pki/tls/private/ca.key
 
@@ -151,7 +175,9 @@ RedirectMatch ^/$ /centreon
 
 5. Enable HttpOnly / Secure flags and hide Apache server signature
 
-Edit the **/opt/rh/httpd24/root/etc/httpd/conf.d/10-centreon.conf** file and add the following line:
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+Edit the **/etc/httpd/conf.d/10-centreon.conf** file and add the following line:
 
 ```apacheconf
 Header always edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
@@ -159,22 +185,92 @@ ServerSignature Off
 ServerTokens Prod
 ```
 
+Edit the **/etc/php.d/50-centreon.ini** file and turn off the `expose_php` parameter:
+
+```phpconf
+expose_php = Off
+```
+<!--CentOS 7-->
+Edit the **/opt/rh/httpd24/root/etc/httpd/conf.d/10-centreon.conf** file and add the following line:
+
+```apacheconf
+Header set X-Frame-Options: "sameorigin"
+Header always edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+ServerSignature Off
+ServerTokens Prod
+TraceEnable Off
+```
+
 Edit the **/etc/opt/rh/rh-php72/php.d/50-centreon.ini** file and turn off the `expose_php` parameter:
 
 ```phpconf
 expose_php = Off
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 6. Hide the default /icons directory
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+Edit the **/etc/httpd/conf.d/autoindex.conf** file and comment the following line:
+
+```apacheconf
+#Alias /icons/ "/usr/share/httpd/icons/"
+```
+<!--CentOS 7-->
 Edit the **/opt/rh/httpd24/root/etc/httpd/conf.d/autoindex.conf** file and comment the following line:
 
 ```apacheconf
 #Alias /icons/ "/opt/rh/httpd24/root/usr/share/httpd/icons/"
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
-7. Restart the Apache and PHP process to take in account the new configuration:
+7. Disable mod_security boundary to enable license upload
 
+Edit the **/opt/rh/httpd24/root/etc/httpd/conf.d/mod_security.conf** file and comment the following line:
+
+```apacheconf
+#SecRule MULTIPART_UNMATCHED_BOUNDARY "!@eq 0" \
+#"id:'200003',phase:2,t:none,log,deny,status:44,msg:'Multipart parser detected a possible unmatched boundary.'"
+```
+
+8. Restart the Apache and PHP process to take in account the new configuration:
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+```shell
+systemctl restart php-fpm httpd
+```
+
+Then check its status:
+
+```shell
+systemctl status httpd
+```
+
+If everything is ok, you must have:
+
+```shell
+● httpd.service - The Apache HTTP Server
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+  Drop-In: /usr/lib/systemd/system/httpd.service.d
+           └─php-fpm.conf
+   Active: active (running) since Tue 2020-10-27 12:49:42 GMT; 2h 35min ago
+     Docs: man:httpd.service(8)
+ Main PID: 1483 (httpd)
+   Status: "Total requests: 446; Idle/Busy workers 100/0;Requests/sec: 0.0479; Bytes served/sec: 443 B/sec"
+    Tasks: 278 (limit: 5032)
+   Memory: 39.6M
+   CGroup: /system.slice/httpd.service
+           ├─1483 /usr/sbin/httpd -DFOREGROUND
+           ├─1484 /usr/sbin/httpd -DFOREGROUND
+           ├─1485 /usr/sbin/httpd -DFOREGROUND
+           ├─1486 /usr/sbin/httpd -DFOREGROUND
+           ├─1487 /usr/sbin/httpd -DFOREGROUND
+           └─1887 /usr/sbin/httpd -DFOREGROUND
+
+```
+<!--CentOS 7-->
 ```shell
 systemctl restart rh-php72-php-fpm httpd24-httpd
 ```
@@ -207,6 +303,7 @@ If everything is ok, you must have:
            ├─31903 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
            └─32050 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 ## Custom URI
 
@@ -220,8 +317,20 @@ To update the Centreon URI, you need to follow those steps:
 
 ![image](../assets/administration/custom-uri.png)
 
-2. Edit Apache configuration file for Centreon Web (**/opt/rh/httpd24/root/etc/httpd/conf.d/10-centreon.conf**) and
-change **/centreon** path with your new path
+2. Edit Apache configuration file for Centreon Web 
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+```shell
+vim /etc/httpd/conf.d/10-centreon.conf
+```
+<!--CentOS 7-->
+```shell
+vim /opt/rh/httpd24/root/etc/httpd/conf.d/10-centreon.conf
+```
+
+and change **/centreon** path with your new path
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 ## Enabling http2
 
@@ -229,6 +338,43 @@ It is possible to enable http2 protocol to improve Centreon network performance.
 
 To use http2, you need to follow those steps:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--RHEL / CentOS / Oracle Linux 8-->
+1. [Configure https on Centreon](./secure-platform.html#securing-the-apache-web-server)
+
+2. Install nghttp2 module:
+
+```shell
+dnf install nghttp2
+```
+
+3. Enable http2 protocol in **/etc/httpd/conf.d/10-centreon.conf**:
+
+```apacheconf
+...
+<VirtualHost *:443>
+    Protocols h2 h2c http/1.1
+    ...
+</VirtualHost>
+...
+```
+
+4. Update method used by apache multi-processus module in **/etc/httpd/conf.modules.d/00-mpm.conf**:
+
+```diff
+-LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
++#LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
+
+-#LoadModule mpm_event_module modules/mod_mpm_event.so
++LoadModule mpm_event_module modules/mod_mpm_event.so
+```
+
+5. Restart the Apache process to take in account the new configuration:
+
+```shell
+systemctl restart httpd
+```
+<!--CentOS 7-->
 1. [Configure https on Centreon](./secure-platform.html#securing-the-apache-web-server)
 
 2. Install nghttp2 module:
@@ -263,6 +409,7 @@ yum install httpd24-nghttp2
 ```shell
 systemctl restart httpd24-httpd
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 ## User authentication
 

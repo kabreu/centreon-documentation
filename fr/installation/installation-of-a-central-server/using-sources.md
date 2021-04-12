@@ -43,6 +43,7 @@ yum install -y \
     rh-php72-php-cli \
     rh-php72-php-mbstring \
     rh-php72-php-snmp \
+    openssl \
     perl-DBD-MySQL \
     perl-Sys-Syslog \
     httpd24-httpd \
@@ -558,7 +559,7 @@ Reloading Apache service                                   OK
 Do you want to add Centreon PHP FPM sub configuration file ?
 [y/n], default to [n]:
 > y
-Creating directory /var/lib/centroen/sessions              OK
+Creating directory /var/lib/centreon/sessions              OK
 Create 'etc/php/7.2/fpm/pool.d/centreon.conf'              OK
 Configuring PHP FPM                                        OK
 
